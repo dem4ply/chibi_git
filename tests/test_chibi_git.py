@@ -66,3 +66,12 @@ class Test_chibi_git_after_commit( unittest.TestCase ):
         self.file = self.path.temp_file()
         self.repo.add( self.file )
         self.repo.commit( "init" )
+
+    def test_test_rename_file_should_be_returned_on_status( self ):
+        new_file = self.file.base_name
+        new_file = new_file[1:]
+        new_file = self.file.dir_name + new_file
+        self.file.move( new_file )
+        self.repo.add( self.file )
+        self.repo.add( new_file )
+        self.assertTrue( self.repo.status.renamed )

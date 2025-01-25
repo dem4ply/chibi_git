@@ -11,8 +11,10 @@ class Status_result( Command_result ):
         result = Chibi_atlas()
         untrack = list( filter( lambda x: x.startswith( "??" ), lines ) )
         modified = list( filter( lambda x: x.startswith( "M" ), lines ) )
+        renamed = list( filter( lambda x: x.startswith( "R" ), lines ) )
         result.untrack = untrack
         result.modified = modified
+        result.renamed = renamed
         self.result = result
 
 
