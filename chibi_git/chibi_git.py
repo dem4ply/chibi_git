@@ -43,7 +43,17 @@ class Git:
 
     @property
     def is_dirty( self ):
-        result = bool( self.status.modified or self.status.renamed )
+        status = self.status
+        result = bool(
+            status.modified
+            or status.renamed
+            or status.untrack
+            or status.modified
+            or status.added
+            or status.deleted
+            or status.copied
+            or status.type_change
+        )
         return result
 
     @property

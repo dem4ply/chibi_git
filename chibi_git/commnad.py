@@ -12,9 +12,20 @@ class Status_result( Command_result ):
         untrack = list( filter( lambda x: x.startswith( "??" ), lines ) )
         modified = list( filter( lambda x: x.startswith( "M" ), lines ) )
         renamed = list( filter( lambda x: x.startswith( "R" ), lines ) )
+        added = list( filter( lambda x: x.startswith( "A" ), lines ) )
+        deleted = list( filter( lambda x: x.startswith( "D" ), lines ) )
+        copied = list( filter( lambda x: x.startswith( "C" ), lines ) )
+        type_change = list( filter( lambda x: x.startswith( "T" ), lines ) )
+        update_no_merge = list(
+            filter( lambda x: x.startswith( "U" ), lines ) )
         result.untrack = untrack
         result.modified = modified
         result.renamed = renamed
+        result.added= added
+        result.deleted = deleted
+        result.copied = copied
+        result.update_no_merge = update_no_merge
+        result.type_change = type_change
         self.result = result
 
 
