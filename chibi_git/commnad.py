@@ -1,13 +1,13 @@
-from chibi_command import Command, Command_result
-from chibi_atlas import Chibi_atlas
 from chibi.file import Chibi_path
+from chibi_atlas import Chibi_atlas
+from chibi_command import Command, Command_result
 
 
 class Status_result( Command_result ):
     def parse_result( self ):
         lines = self.result.split( '\n' )
         lines = list( map( str.strip, lines ) )
-        #files = lines[1:]
+        # files = lines[1:]
         result = Chibi_atlas()
         untrack = list( filter( lambda x: x.startswith( "??" ), lines ) )
         modified = list( filter( lambda x: x.startswith( "M" ), lines ) )
@@ -21,7 +21,7 @@ class Status_result( Command_result ):
         result.untrack = untrack
         result.modified = modified
         result.renamed = renamed
-        result.added= added
+        result.added = added
         result.deleted = deleted
         result.copied = copied
         result.update_no_merge = update_no_merge
@@ -29,18 +29,29 @@ class Status_result( Command_result ):
         self.result = result
 
 
+class Rev_parse_result( Command_result ):
+    def parse_result( self ):
+        self.result = self.result.strip()
+
+
 class Git( Command ):
     command = 'git'
     captive = True
 
     @classmethod
-    def rev_parse( cls, src=None ):
-        command = cls._build_command( 'rev-parse', src=src )
+    def rev_parse( cls, *args, src=None, **kw ):
+        command = cls._build_command(
+            'rev-parse', *args, src=src, result_class=Rev_parse_result, **kw )
         return command
 
     @classmethod
     def init( cls, src=None ):
         command = cls._build_command( 'init', src=src )
+        return command
+
+    @classmethod
+    def log( cls, *args, src=None, **kw ):
+        command = cls._build_command( 'log', *args, src=src, **kw )
         return command
 
     @classmethod

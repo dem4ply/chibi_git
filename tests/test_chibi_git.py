@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import datetime
 import unittest
+
+from chibi.file.temp import Chibi_temp_path
 from chibi.madness.string import generate_string
+
 from chibi_git import Git
 from chibi_git.exception import Git_not_initiate
-from chibi.file.temp import Chibi_temp_path
+from chibi_git.obj import Branch, Commit
 
 
 class Test_chibi_git_not_init( unittest.TestCase ):
@@ -75,3 +79,32 @@ class Test_chibi_git_after_commit( unittest.TestCase ):
         self.repo.add( self.file )
         self.repo.add( new_file )
         self.assertTrue( self.repo.status.renamed )
+
+
+class Test_chibi_git_head( Test_chibi_git_after_commit ):
+    def test_repo_should_have_head( self ):
+        self.assertTrue( self.repo.head )
+
+    def test_repo_head_the_branch_is_aiming_head( self ):
+        self.assertIsInstance( self.repo.head, Branch )
+
+    def test_repo_head_should_have_name( self ):
+        self.assertEqual( self.repo.head.name, 'master' )
+
+
+class Test_chibi_git_commit( Test_chibi_git_after_commit ):
+    def test_head_should_have_commits( self ):
+        self.assertTrue( self.repo.head.commit )
+
+    def test_commit_should_be_a_commit( self ):
+        self.assertIsInstance( self.repo.head.commit, Commit )
+
+    def test_commit_should_have_author( self ):
+        self.assertTrue( self.repo.head.commit.author )
+
+    def test_commit_should_have_date( self ):
+        self.assertTrue( self.repo.head.commit.date )
+        self.assertIsInstance( self.repo.head.commit.date, datetime.datetime )
+
+    def test_commit_should_have_message( self ):
+        self.assertTrue( self.repo.head.commit.message )

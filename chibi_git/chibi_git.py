@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from chibi.file import Chibi_path
 from chibi_command import Result_error
+
 from chibi_git.commnad import Git as Git_command
 from chibi_git.exception import Git_not_initiate
+from chibi_git.obj import Head
 
 
 class Git:
@@ -33,10 +35,10 @@ class Git:
         return status.result
 
     def add( self, file ):
-        result = Git_command.add( file, src=self._path ).run()
+        Git_command.add( file, src=self._path ).run()
 
     def commit( self, message ):
-        result = Git_command.commit( message, src=self._path ).run()
+        Git_command.commit( message, src=self._path ).run()
 
     def reset( self ):
         raise NotImplementedError
@@ -55,6 +57,14 @@ class Git:
             or status.type_change
         )
         return result
+
+    @property
+    def head( self ):
+        current_branch = Git_command.rev_parse(
+            '--abbrev-ref', 'HEAD', src=self._path ).run()
+        branch = Head( self, current_branch.result )
+        # commit = Commit( self, current_branch.result )
+        return branch
 
     @property
     def path( self ):
