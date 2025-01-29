@@ -53,6 +53,15 @@ class Test_chibi_git( unittest.TestCase ):
         status = self.repo.status
         self.assertTrue( status.modified )
 
+    def test_status_modified_should_only_have_the_file( self ):
+        file = self.path.temp_file()
+        self.repo.add( file )
+        self.repo.commit(
+            "test_status_should_have_modifed_file" )
+        file.open().append( generate_string() )
+        status = self.repo.status
+        self.assertFalse( status.modified[0].startswith( 'M ' ) )
+
     def test_is_dirty_should_return_true_when_modified_files( self ):
         file = self.path.temp_file()
         self.repo.add( file )

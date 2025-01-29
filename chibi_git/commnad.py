@@ -3,21 +3,35 @@ from chibi_atlas import Chibi_atlas
 from chibi_command import Command, Command_result
 
 
+def remove_type_from_status_string( file ):
+    return file.split( ' ', 1 )[1]
+
+
 class Status_result( Command_result ):
     def parse_result( self ):
         lines = self.result.split( '\n' )
         lines = list( map( str.strip, lines ) )
         # files = lines[1:]
         result = Chibi_atlas()
-        untrack = list( filter( lambda x: x.startswith( "??" ), lines ) )
-        modified = list( filter( lambda x: x.startswith( "M" ), lines ) )
-        renamed = list( filter( lambda x: x.startswith( "R" ), lines ) )
-        added = list( filter( lambda x: x.startswith( "A" ), lines ) )
-        deleted = list( filter( lambda x: x.startswith( "D" ), lines ) )
-        copied = list( filter( lambda x: x.startswith( "C" ), lines ) )
-        type_change = list( filter( lambda x: x.startswith( "T" ), lines ) )
+        untrack = filter( lambda x: x.startswith( "??" ), lines )
+        untrack = list( map( remove_type_from_status_string, untrack ) )
+        modified = filter( lambda x: x.startswith( "M" ), lines )
+        modified = list( map( remove_type_from_status_string, modified ) )
+        renamed = filter( lambda x: x.startswith( "R" ), lines )
+        renamed = list( map( remove_type_from_status_string, renamed ) )
+        added = filter( lambda x: x.startswith( "A" ), lines )
+        added = list( map( remove_type_from_status_string, added ) )
+        deleted = filter( lambda x: x.startswith( "D" ), lines )
+        deleted = list( map( remove_type_from_status_string, deleted ) )
+        copied = filter( lambda x: x.startswith( "C" ), lines )
+        copied = list( map( remove_type_from_status_string, copied ) )
+        type_change = filter( lambda x: x.startswith( "T" ), lines )
+        type_change = list(
+            map( remove_type_from_status_string, type_change ) )
+        update_no_merge = filter( lambda x: x.startswith( "U" ), lines )
         update_no_merge = list(
-            filter( lambda x: x.startswith( "U" ), lines ) )
+            map( remove_type_from_status_string, update_no_merge ) )
+
         result.untrack = untrack
         result.modified = modified
         result.renamed = renamed
