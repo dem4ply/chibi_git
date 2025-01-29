@@ -54,6 +54,9 @@ class Commit:
         result = Chibi_atlas( author=author, date=date, message=message )
         return result
 
+    def __str__( self ):
+        return f"{self._hash}"
+
 
 class Branch:
     def __init__( self, repo, name ):

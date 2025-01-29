@@ -34,6 +34,12 @@ class Rev_parse_result( Command_result ):
         self.result = self.result.strip()
 
 
+class Rev_list_parse_result( Command_result ):
+    def parse_result( self ):
+        self.result = list(
+            map( lambda x: x.strip(), self.result.strip( '\n' ) ) )
+
+
 class Git( Command ):
     command = 'git'
     captive = True
@@ -42,6 +48,13 @@ class Git( Command ):
     def rev_parse( cls, *args, src=None, **kw ):
         command = cls._build_command(
             'rev-parse', *args, src=src, result_class=Rev_parse_result, **kw )
+        return command
+
+    @classmethod
+    def rev_list( cls, *args, src=None, **kw ):
+        command = cls._build_command(
+            'rev-list', *args, src=src,
+            result_class=Rev_list_parse_result, **kw )
         return command
 
     @classmethod

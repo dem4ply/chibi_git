@@ -4,7 +4,7 @@ from chibi_command import Result_error
 
 from chibi_git.commnad import Git as Git_command
 from chibi_git.exception import Git_not_initiate
-from chibi_git.obj import Head
+from chibi_git.obj import Head, Commit
 
 
 class Git:
@@ -69,3 +69,8 @@ class Git:
     @property
     def path( self ):
         return Chibi_path( self._path )
+
+    def log( self ):
+        commit_hashs = Git_command.rev_list(
+            'HEAD', src=self._path ).run().result
+        yield from map( lambda x: Commit( self, x ), commit_hashs )
