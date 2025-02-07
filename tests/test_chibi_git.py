@@ -3,6 +3,7 @@
 import datetime
 import unittest
 
+from unittest.mock import patch, Mock
 from chibi.file.temp import Chibi_temp_path
 from chibi.madness.string import generate_string
 
@@ -70,6 +71,11 @@ class Test_chibi_git( unittest.TestCase ):
         file.open().append( generate_string() )
         self.assertTrue( self.repo.is_dirty )
 
+    def test_is_dirty_should_return_false_when_only_have_untrack( self ):
+        self.assertFalse( self.repo.is_dirty )
+        file = self.path.temp_file()
+        self.assertFalse( self.repo.is_dirty )
+
 
 class Test_chibi_git_after_commit( unittest.TestCase ):
     def setUp(self):
@@ -117,3 +123,44 @@ class Test_chibi_git_commit( Test_chibi_git_after_commit ):
 
     def test_commit_should_have_message( self ):
         self.assertTrue( self.repo.head.commit.message )
+
+
+class Test_chibi_git_push( Test_chibi_git_after_commit ):
+    @patch( 'chibi_command.Popen' )
+    def test_push_should_work( self, popen ):
+        proccess = Mock()
+        popen.return_value = proccess
+        proccess.returncode = 0
+        proccess.communicate.return_value = ( b"", b"" )
+        self.repo.push( 'origin', 'master' )
+        popen.assert_called_once()
+        called_args = popen.call_args[0][0][3:]
+        self.assertEqual( called_args, ( 'push', 'origin', 'master' ) )
+
+
+class Test_chibi_git_checkout( Test_chibi_git_after_commit ):
+    def test_should_work( self ):
+        self.repo.checkout()
+
+    @patch( 'chibi_git.command.Git.checkout' )
+    def test_should_call_checkout_command_with_src_path( self, checkout ):
+        self.repo.checkout()
+        self.assertIn( 'src', checkout.call_args[1] )
+        self.assertIsNotNone( checkout.call_args[1][ 'src' ] )
+
+    def test_checkout_should_no_remove_untrack_files( self ):
+        file = self.path.temp_file()
+        self.repo.checkout()
+        self.assertIn( file.base_name, self.repo.status.untrack )
+
+    def test_checkout_should_reset_changes( self ):
+        file = self.path.temp_file()
+        file.open().append( generate_string() )
+        self.repo.add( file )
+        self.repo.commit(
+            "test_checkout_should_reset_changes" )
+        self.assertFalse( self.repo.is_dirty )
+        file.open().append( generate_string() )
+        self.assertTrue( self.repo.is_dirty )
+        self.repo.checkout()
+        self.assertFalse( self.repo.is_dirty, "checkout no limpio el repo" )

@@ -72,6 +72,12 @@ class Git( Command ):
         return command
 
     @classmethod
+    def checkout( cls, *args, src=None, **kw ):
+        command = cls._build_command(
+            'checkout', *args, src=src, **kw )
+        return command
+
+    @classmethod
     def init( cls, src=None ):
         command = cls._build_command( 'init', src=src )
         return command
@@ -95,6 +101,11 @@ class Git( Command ):
     @classmethod
     def commit( cls, message, src=None ):
         command = cls._build_command( 'commit', '-m', message, src=src, )
+        return command
+
+    @classmethod
+    def push( cls, origin, branch, src=None ):
+        command = cls._build_command( 'push', origin, branch, src=src, )
         return command
 
     @classmethod

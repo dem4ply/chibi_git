@@ -4,7 +4,7 @@ import re
 
 from chibi_atlas import Chibi_atlas
 
-from chibi_git.commnad import Git
+from chibi_git.command import Git
 
 
 class Commit:

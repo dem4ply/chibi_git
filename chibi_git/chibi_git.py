@@ -2,7 +2,7 @@
 from chibi.file import Chibi_path
 from chibi_command import Result_error
 
-from chibi_git.commnad import Git as Git_command
+from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Head, Commit
 
@@ -40,8 +40,14 @@ class Git:
     def commit( self, message ):
         Git_command.commit( message, src=self._path ).run()
 
-    def reset( self ):
-        raise NotImplementedError
+    def reset( self, hard=False ):
+        if hard:
+            Git_command.reset( '--hard', src=self._path ).run()
+        else:
+            Git_command.reset( src=self._path ).run()
+
+    def checkout( self ):
+        Git_command.checkout( '.', src=self._path ).run()
 
     @property
     def is_dirty( self ):
@@ -49,7 +55,6 @@ class Git:
         result = bool(
             status.modified
             or status.renamed
-            or status.untrack
             or status.modified
             or status.added
             or status.deleted
@@ -74,3 +79,9 @@ class Git:
         commit_hashs = Git_command.rev_list(
             'HEAD', src=self._path ).run().result
         yield from map( lambda x: Commit( self, x ), commit_hashs )
+
+    def push( self, origin, branch ):
+        push = Git_command.push(
+            origin, branch, src=self._path )
+        result = push.run()
+        return bool( result )
