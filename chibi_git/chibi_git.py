@@ -5,6 +5,7 @@ from chibi_command import Result_error
 from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Head, Commit
+from .obj import Remote_wrapper
 
 
 class Git:
@@ -80,8 +81,23 @@ class Git:
             'HEAD', src=self._path ).run().result
         yield from map( lambda x: Commit( self, x ), commit_hashs )
 
-    def push( self, origin, branch ):
+    def push( self, origin, branch, set_upstream=False ):
         push = Git_command.push(
-            origin, branch, src=self._path )
+            origin, branch, set_upstream=set_upstream, src=self._path )
         result = push.run()
         return bool( result )
+
+    @property
+    def remote( self ):
+        result = Remote_wrapper( repo=self )
+        return result
+
+    def _remote( self ):
+        remote_list = Git_command.remote( src=self._path ).run().result
+        return remote_list
+
+    def _remote__get_url( self, name ):
+        return Git_command.remote__get_url( name, src=self._path ).run().result
+
+    def _remote__add( self, name, url ):
+        Git_command.remote__add( name, url, src=self._path ).run()

@@ -43,15 +43,24 @@ class Status_result( Command_result ):
         self.result = result
 
 
-class Rev_parse_result( Command_result ):
+class Clean_result( Command_result ):
     def parse_result( self ):
         self.result = self.result.strip()
+
+
+class Rev_parse_result( Clean_result ):
+    pass
 
 
 class Rev_list_parse_result( Command_result ):
     def parse_result( self ):
         self.result = list(
             map( lambda x: x.strip(), self.result.strip( '\n' ) ) )
+
+
+class Remote_result( Command_result ):
+    def parse_result( self ):
+        self.result = list( filter( bool, self.result.split( '\n' ) ) )
 
 
 class Git( Command ):
@@ -104,8 +113,12 @@ class Git( Command ):
         return command
 
     @classmethod
-    def push( cls, origin, branch, src=None ):
-        command = cls._build_command( 'push', origin, branch, src=src, )
+    def push( cls, origin, branch, set_upstream=False, src=None ):
+        args = []
+        if set_upstream:
+            args.append( '--set-upstream' )
+        command = cls._build_command(
+            'push', origin, branch, *args, src=src, )
         return command
 
     @classmethod
@@ -117,4 +130,26 @@ class Git( Command ):
         command = cls(
             f'--git-dir={src}/.git', f'--work-tree={src}',
             *args, **kw )
+        return command
+
+    @classmethod
+    def remote( cls, src=None ):
+        command = cls._build_command(
+            'remote', src=src,
+            result_class=Remote_result )
+        return command
+
+    @classmethod
+    def remote__get_url( cls, name, src=None ):
+        command = cls._build_command(
+            'remote', 'get-url', name, src=src,
+            result_class=Clean_result
+        )
+        return command
+
+    @classmethod
+    def remote__add( cls, name, url, src=None ):
+        command = cls._build_command(
+            'remote', 'add', name, url, src=src,
+        )
         return command

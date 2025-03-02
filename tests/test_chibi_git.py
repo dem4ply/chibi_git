@@ -9,7 +9,7 @@ from chibi.madness.string import generate_string
 
 from chibi_git import Git
 from chibi_git.exception import Git_not_initiate
-from chibi_git.obj import Branch, Commit
+from chibi_git.obj import Branch, Commit, Remote_wrapper
 
 
 class Test_chibi_git_not_init( unittest.TestCase ):
@@ -137,6 +137,18 @@ class Test_chibi_git_push( Test_chibi_git_after_commit ):
         called_args = popen.call_args[0][0][3:]
         self.assertEqual( called_args, ( 'push', 'origin', 'master' ) )
 
+    @patch( 'chibi_command.Popen' )
+    def test_push_set_upstream_should_be_sended_in_command( self, popen ):
+        proccess = Mock()
+        proccess.returncode = 0
+        proccess.communicate.return_value = ( b"", b"" )
+        popen.return_value = proccess
+
+        self.repo.push( 'origin', 'master', set_upstream=True )
+        called_args = popen.call_args[0][0][3:]
+        self.assertEqual(
+            called_args, ( 'push', 'origin', 'master', '--set-upstream' ) )
+
 
 class Test_chibi_git_checkout( Test_chibi_git_after_commit ):
     def test_should_work( self ):
@@ -164,3 +176,14 @@ class Test_chibi_git_checkout( Test_chibi_git_after_commit ):
         self.assertTrue( self.repo.is_dirty )
         self.repo.checkout()
         self.assertFalse( self.repo.is_dirty, "checkout no limpio el repo" )
+
+
+class Test_chibi_git_remote( Test_chibi_git_after_commit ):
+    def test_remote_should_be_a_remote_wrapper( self ):
+        self.assertIsInstance( self.repo.remote, Remote_wrapper )
+
+    def test_remote_should_accept_append_with_parameters( self ):
+        self.assertFalse( self.repo.remote )
+        self.repo.remote.append( "origin", "some_url" )
+        self.assertTrue( self.repo.remote )
+        self.assertEqual( self.repo.remote.origin, "some_url" )

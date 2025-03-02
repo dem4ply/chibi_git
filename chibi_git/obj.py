@@ -74,3 +74,31 @@ class Head( Branch ):
         result = Git.rev_parse(
             'HEAD', src=self.repo.path ).run()
         return Commit( self.repo, result.result )
+
+
+class Remote_wrapper:
+    def __init__( self, repo ):
+        self.repo = repo
+        self.reload()
+
+    def reload( self ):
+        names = self.repo._remote()
+        self._names = Chibi_atlas()
+        for n in names:
+            self._names[ n ] = self.repo._remote__get_url( n )
+
+    def append( self, name, url ):
+        self.repo._remote__add( name, url )
+        self.reload()
+
+    def __bool__( self ):
+        return bool( self._names )
+
+    def __getattr__( self, name ):
+        try:
+            return super().__getattribute__( name )
+        except AttributeError as e:
+            try:
+                return self._names[ name ]
+            except KeyError:
+                raise e
