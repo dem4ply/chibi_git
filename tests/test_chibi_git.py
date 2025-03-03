@@ -4,6 +4,7 @@ import datetime
 import unittest
 
 from unittest.mock import patch, Mock
+from chibi.file import Chibi_path
 from chibi.file.temp import Chibi_temp_path
 from chibi.madness.string import generate_string
 
@@ -36,6 +37,16 @@ class Test_chibi_git( unittest.TestCase ):
         self.assertTrue( self.path.exists )
         self.assertTrue( self.repo )
         self.assertTrue( self.repo.status )
+
+    def test_should_work_with_repo_is_string(self):
+        repo = Git( str( self.path ) )
+        self.assertTrue( repo )
+        self.assertTrue( repo.status )
+
+    def test_should_work_with_dot_string(self):
+        repo = Git( '.' )
+        self.assertTrue( repo )
+        self.assertTrue( repo.status )
 
     def test_status_should_return_untrack_files(self):
         self.path.temp_file()
@@ -75,6 +86,12 @@ class Test_chibi_git( unittest.TestCase ):
         self.assertFalse( self.repo.is_dirty )
         file = self.path.temp_file()
         self.assertFalse( self.repo.is_dirty )
+
+    def test_status_added_should_no_have_spaces( self ):
+        file = self.path.temp_file()
+        self.repo.status.untrack[0].add()
+        self.assertEqual( len( self.repo.status.added ), 1 )
+        self.assertNotIn( ' ', self.repo.status.added[0] )
 
 
 class Test_chibi_git_after_commit( unittest.TestCase ):
@@ -163,7 +180,12 @@ class Test_chibi_git_checkout( Test_chibi_git_after_commit ):
     def test_checkout_should_no_remove_untrack_files( self ):
         file = self.path.temp_file()
         self.repo.checkout()
-        self.assertIn( file.base_name, self.repo.status.untrack )
+        for f in self.repo.status.untrack:
+            if file.base_name in str( f ):
+                break
+        else:
+            self.fail(
+                f"no se encontro {file} en {self.repo.status.untrack}" )
 
     def test_checkout_should_reset_changes( self ):
         file = self.path.temp_file()
@@ -187,3 +209,16 @@ class Test_chibi_git_remote( Test_chibi_git_after_commit ):
         self.repo.remote.append( "origin", "some_url" )
         self.assertTrue( self.repo.remote )
         self.assertEqual( self.repo.remote.origin, "some_url" )
+
+
+class Test_chibi_git_status_file_obj( Test_chibi_git_after_commit ):
+    def test_status_obj_should_be_a_object_like_chibi_path( self ):
+        file = self.path.temp_file()
+        self.assertEqual( len( self.repo.status.untrack ), 1 )
+        self.assertIsInstance( self.repo.status.untrack[0], Chibi_path )
+
+    def test_status_obj_can_add_himself( self ):
+        file = self.path.temp_file()
+        self.repo.status.untrack[0].add()
+        self.assertEqual( len( self.repo.status.added ), 1 )
+        self.assertEqual( self.repo.status.added[0], file )

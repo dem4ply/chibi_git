@@ -2,6 +2,7 @@ import datetime
 import functools
 import re
 
+from chibi.file import Chibi_path
 from chibi_atlas import Chibi_atlas
 
 from chibi_git.command import Git
@@ -102,3 +103,16 @@ class Remote_wrapper:
                 return self._names[ name ]
             except KeyError:
                 raise e
+
+
+class Chibi_status_file( Chibi_path ):
+    def __new__( cls, path, *args, repo=None, **kw ):
+        if repo:
+            path = repo._path + path
+            path = path.inflate
+        result = super().__new__( cls, path, *args, **kw )
+        result._repo = repo
+        return result
+
+    def add( self ):
+        return self._repo.add( self )

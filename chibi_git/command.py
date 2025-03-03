@@ -4,7 +4,7 @@ from chibi_command import Command, Command_result
 
 
 def remove_type_from_status_string( file ):
-    return file.split( ' ', 1 )[1]
+    return file.split( ' ', 1 )[1].strip()
 
 
 class Status_result( Command_result ):

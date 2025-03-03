@@ -5,11 +5,14 @@ from chibi_command import Result_error
 from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Head, Commit
-from .obj import Remote_wrapper
+from chibi_atlas import Chibi_atlas
+from .obj import Remote_wrapper, Chibi_status_file
 
 
 class Git:
     def __init__( self, path ):
+        if isinstance( path, str ):
+            path = Chibi_path( path )
         self._path = path
 
     @property
@@ -33,10 +36,41 @@ class Git:
         if not self.has_git:
             raise NotImplementedError
         status = Git_command.status( src=self._path ).run()
-        return status.result
+        prev = status.result
+        result = Chibi_atlas()
+        for k, v in prev.items():
+            result[ k ] = list( Chibi_status_file( f, repo=self ) for f in v )
+        return result
 
     def add( self, file ):
-        Git_command.add( file, src=self._path ).run()
+        if isinstance( file, Chibi_status_file ):
+            relative_path = file.relative_to( self._path )
+            if relative_path.startswith( '..' ):
+                raise NotImplementedError(
+                    f"no esta implementado {type(file)} con valor {file}, "
+                    "no es tatalmente relativo al repo" )
+            if relative_path.startswith( '/' ):
+                raise NotImplementedError(
+                    f"no esta implementado {type(file)} con valor {file}, "
+                    "empieza con root" )
+            Git_command.add( relative_path, src=self._path ).run()
+        elif isinstance( file, Chibi_path ):
+            relative_path = file.relative_to( self._path )
+            if relative_path.startswith( '..' ):
+                raise NotImplementedError(
+                    f"no esta implementado {type(file)} con valor {file}, "
+                    "no es tatalmente relativo al repo" )
+            if relative_path.startswith( '/' ):
+                raise NotImplementedError(
+                    f"no esta implementado {type(file)} con valor {file}, "
+                    "empieza con root" )
+            Git_command.add( relative_path, src=self._path ).run()
+        elif isinstance( file, str ):
+            raise NotImplementedError(
+                f"no esta implementado {type(file)} con valor {file}" )
+        else:
+            raise NotImplementedError(
+                f"no esta implementado {type(file)} con valor {file}" )
 
     def commit( self, message ):
         Git_command.commit( message, src=self._path ).run()
