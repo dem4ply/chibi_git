@@ -11,9 +11,21 @@ Chibi_git
         :alt: Documentation Status
 
 
-
-
 wrapper to use git in python
+
+***************
+Ejemplos de uso
+***************
+
+.. code-block:: python
+
+	from chibi_git import Git
+
+
+	repo = Git( '/algun/directorio' )
+	for file in repo.status.modified:
+		file.add()
+	repo.commit( 'algun mensaje' )
 
 
 * Free software: WTFPL
