@@ -5,6 +5,7 @@ from chibi_command import Result_error
 from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Head, Commit
+from chibi_git.snippets import get_base_name_from_git_url
 from chibi_atlas import Chibi_atlas
 from .obj import Remote_wrapper, Chibi_status_file
 
@@ -14,6 +15,35 @@ class Git:
         if isinstance( path, str ):
             path = Chibi_path( path )
         self._path = path
+
+    @classmethod
+    def clone( cls, url, path=None ):
+        """
+        clona un repo de la url, el path solo puede ser la ruta donde se
+        clonara y el nombre final de la carpeta a clonar es la de default
+        de git
+
+        Parameters
+        ----------
+        url: str
+            url que se clonara
+        path: str:
+            ubicacion donde se clonara el repo
+
+        Returns
+        -------
+        Git
+        """
+        if path is None:
+            path = Chibi_path.current_dir()
+        path = Chibi_path( str( path ) )
+
+        base_name = get_base_name_from_git_url( url )
+        path = path + base_name
+
+        Git_command.clone( url, path ).run()
+
+        return cls( path )
 
     @property
     def has_git( self ):

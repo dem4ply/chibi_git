@@ -153,3 +153,12 @@ class Git( Command ):
             'remote', 'add', name, url, src=src,
         )
         return command
+
+    @classmethod
+    def clone( cls, url, directory=None ):
+        if directory is not None:
+            command = cls( 'clone', url, directory )
+        else:
+            command = cls( 'clone', url )
+
+        return command

@@ -13,9 +13,8 @@ Chibi_git
 
 wrapper to use git in python
 
-***************
 Ejemplos de uso
-***************
+---------------
 
 .. code-block:: python
 
