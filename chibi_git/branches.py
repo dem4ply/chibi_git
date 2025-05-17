@@ -8,7 +8,7 @@ class Branches:
 
     def __repr__( self ):
         return (
-            f"Branches( repo={repo} )"
+            f"Branches( repo={self.repo} )"
         )
 
     @property
@@ -41,6 +41,11 @@ class Branches:
             target = 'HEAD'
         if isinstance( target, Commit ):
             target = str( target )
+        if isinstance( target, str ):
+            pass
+        else:
+            raise NotImplementedError(
+                f"target {type(target)} con valor {target} no implementado" )
 
         command = Git.branch( name, target, src=self.repo.path )
         command.run()

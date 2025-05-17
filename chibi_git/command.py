@@ -203,12 +203,12 @@ class Git( Command ):
 
 
     @classmethod
-    def tag( cls, src=None ):
+    def tag( cls, *args, src=None ):
         """
         wrapper de git branch
         """
         command = cls._build_command(
-            'tag', src=src, result_class=Tag_result )
+            'tag', *args, src=src, result_class=Tag_result )
         return command
 
     @classmethod

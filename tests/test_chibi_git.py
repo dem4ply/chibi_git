@@ -267,6 +267,7 @@ class Test_chibi_git_branchs( Test_chibi_git_after_commit ):
         branch = self.repo.branches.create( 'new_branch' )
         self.assertIsInstance( branch.commit, Commit )
 
+
 class Test_create_branch( Test_chibi_git_with_history ):
     def test_can_create_branch_in_any_commit( self ):
         self.assertNotIn( 'new_branch', self.repo.branches.local )
@@ -283,6 +284,24 @@ class Test_create_branch( Test_chibi_git_with_history ):
         branch = self.repo.branches.create( 'new_branch', commit )
         self.assertEqual( branch.commit, commit )
         self.assertIsInstance( branch.commit, Commit )
+
+
+class Test_create_tag( Test_chibi_git_with_history ):
+    def test_can_create_tag_in_any_commit( self ):
+        self.assertNotIn( 'new_tag', self.repo.tags )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        tag = self.repo.tags.create( 'new_tag', str( commit ) )
+        self.assertEqual( tag.commit, commit )
+        self.assertIsInstance( tag.commit, Commit )
+
+    def test_can_create_tag_in_any_commit_obj( self ):
+        self.assertNotIn( 'new_tag', self.repo.tags )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        tag = self.repo.tags.create( 'new_tag', commit )
+        self.assertEqual( tag.commit, commit )
+        self.assertIsInstance( tag.commit, Commit )
 
 
 class Test_chibi_git_branches_remote( unittest.TestCase ):
@@ -313,8 +332,7 @@ class Test_chibi_git_tag( unittest.TestCase ):
         self.repo = Git( '.' )
 
     def test_tags_should_return_a_list( self ):
-        self.assertIsInstance( self.repo.tags, list )
-        self.assertTrue( self.repo.tags )
+        self.assertTrue( list( self.repo.tags ) )
 
     def test_tags_should_have_some_version( self ):
         self.assertIn( 'v0.0.2', self.repo.tags )

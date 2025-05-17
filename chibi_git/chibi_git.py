@@ -7,6 +7,7 @@ from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Head, Commit, Tag
 from chibi_git.branches import Branches
+from chibi_git.tags import Tags
 from chibi_git.snippets import get_base_name_from_git_url
 from chibi_atlas import Chibi_atlas
 from .obj import Remote_wrapper, Chibi_status_file
@@ -194,8 +195,7 @@ class Git:
         """
         regresa una lista de objetos de tags
         """
-        tags = Git_command.tag( src=self._path ).run().result
-        return list( map( lambda x: Tag( repo=self, name=x ), tags ) )
+        return Tags( self )
 
     def __repr__( self ):
         return (
