@@ -2,6 +2,12 @@
 History
 =======
 
+0.5.0 ( 2025-05-17 )
+--------------------
+
+* funcionalidad para crear ramas Git( '.' ).branches.create( 'new_branch' )
+* funcionalidad para crear tags Git( '.' ).tags.create( 'new_branch' )
+
 0.4.1 ( 2025-05-16 )
 --------------------
 
