@@ -2,6 +2,11 @@
 History
 =======
 
+0.4.0 ( 2025-05-16 )
+--------------------
+
+* funcion para leer las ramas de los repos Git( '.' ).branches
+
 0.3.0 ( 2025-05-16 )
 --------------------
 
