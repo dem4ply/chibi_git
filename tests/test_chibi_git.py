@@ -101,11 +101,11 @@ class Test_chibi_git( unittest.TestCase ):
 
     def test_is_dirty_should_return_false_when_only_have_untrack( self ):
         self.assertFalse( self.repo.is_dirty )
-        file = self.path.temp_file()
+        self.path.temp_file()
         self.assertFalse( self.repo.is_dirty )
 
     def test_status_added_should_no_have_spaces( self ):
-        file = self.path.temp_file()
+        self.path.temp_file()
         self.repo.status.untrack[0].add()
         self.assertEqual( len( self.repo.status.added ), 1 )
         self.assertNotIn( ' ', self.repo.status.added[0] )
@@ -337,7 +337,7 @@ class Test_chibi_git_tag( unittest.TestCase ):
     def test_tags_should_have_some_version( self ):
         self.assertIn( 'v0.0.2', self.repo.tags )
 
-    def  test_tags_should_have_commits( self ):
+    def test_tags_should_have_commits( self ):
         self.assertTrue( self.repo.tags )
         for tag in self.repo.tags:
             self.assertTrue( tag.commit )

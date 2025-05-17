@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import datetime
 import unittest
 
-from unittest.mock import patch, Mock
-from chibi.file import Chibi_path
 from chibi.file.temp import Chibi_temp_path
-from chibi.madness.string import generate_string
 
 from chibi_git import Git
-from chibi_git.exception import Git_not_initiate
-from chibi_git.obj import Branch, Commit, Remote_wrapper
 from chibi_git.snippets import get_base_name_from_git_url
 
 

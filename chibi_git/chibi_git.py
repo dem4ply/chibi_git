@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from chibi.file import Chibi_path
+from chibi_atlas import Chibi_atlas
 from chibi_command import Result_error
 
+from .obj import Remote_wrapper, Chibi_status_file
+from chibi_git.branches import Branches
 from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
-from chibi_git.obj import Head, Commit, Tag
-from chibi_git.branches import Branches
-from chibi_git.tags import Tags
+from chibi_git.obj import Head, Commit
 from chibi_git.snippets import get_base_name_from_git_url
-from chibi_atlas import Chibi_atlas
-from .obj import Remote_wrapper, Chibi_status_file
+from chibi_git.tags import Tags
 
 
 logger = logging.getLogger( 'chibi_git' )

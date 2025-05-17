@@ -1,6 +1,5 @@
-from chibi_git.obj import Branch, Commit
-from chibi_git.obj import Head, Commit, Tag
 from chibi_git.command import Git
+from chibi_git.obj import Commit, Tag
 
 
 class Tags:

@@ -201,7 +201,6 @@ class Git( Command ):
                 'branch', *args, src=src, result_class=Branch_result )
         return command
 
-
     @classmethod
     def tag( cls, *args, src=None ):
         """
