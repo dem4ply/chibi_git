@@ -31,6 +31,6 @@ setup(
     name='chibi_git',
     packages=find_packages(include=['chibi_git', 'chibi_git.*']),
     url='https://github.com/dem4ply/chibi_git',
-    version='0.4.1',
+    version='0.5.0',
     zip_safe=False,
 )
