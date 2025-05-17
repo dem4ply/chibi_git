@@ -222,3 +222,43 @@ class Test_chibi_git_status_file_obj( Test_chibi_git_after_commit ):
         self.repo.status.untrack[0].add()
         self.assertEqual( len( self.repo.status.added ), 1 )
         self.assertEqual( self.repo.status.added[0], file )
+
+
+class Test_chibi_git_branchs( Test_chibi_git_after_commit ):
+    def test_repo_should_have_branchs( self ):
+        self.assertTrue( self.repo.branches )
+
+    def test_branches_should_have_local( self ):
+        self.assertTrue( self.repo.branches.local )
+
+    def test_branches_local_should_be_a_list( self ):
+        self.assertIsInstance( self.repo.branches.local, list )
+
+    def test_master_should_be_in_branches( self ):
+        self.assertIn( 'master', self.repo.branches )
+
+    def test_master_should_be_in_branches_local( self ):
+        self.assertIn( 'master', self.repo.branches.local )
+
+
+class Test_chibi_git_branches_remote( unittest.TestCase ):
+    def setUp( self ):
+        self.repo = Git( '.' )
+
+    def test_branches_should_have_remote( self ):
+        self.assertTrue( self.repo.branches.remote )
+
+    def test_branches_remote_should_have_origin( self ):
+        self.assertTrue( self.repo.branches.remote.origin )
+
+    def test_branches_remote_should_be_a_list( self ):
+        self.assertIsInstance( self.repo.branches.remote, list )
+
+    def test_branches_remote_origin_should_be_a_list( self ):
+        self.assertIsInstance( self.repo.branches.remote.origin, list )
+
+    def test_master_should_be_in_branches_remote( self ):
+        self.assertIn( 'origin/master', self.repo.branches.remote )
+
+    def test_master_should_be_in_branches_remote_origin( self ):
+        self.assertIn( 'master', self.repo.branches.remote.origin )

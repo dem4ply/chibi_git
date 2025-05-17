@@ -1,6 +1,7 @@
 from chibi.file import Chibi_path
 from chibi_atlas import Chibi_atlas
 from chibi_command import Command, Command_result
+from chibi_git.snippets import remove_start_asterisk
 
 
 def remove_type_from_status_string( file ):
@@ -41,6 +42,15 @@ class Status_result( Command_result ):
         result.update_no_merge = update_no_merge
         result.type_change = type_change
         self.result = result
+
+
+class Branch_result( Command_result ):
+    def parse_result( self ):
+        lines = self.result.split( '\n' )
+        lines = filter( bool, lines )
+        lines = map( str.strip, lines )
+        lines = map( remove_start_asterisk, lines )
+        self.result = list( lines )
 
 
 class Clean_result( Command_result ):
@@ -161,4 +171,17 @@ class Git( Command ):
         else:
             command = cls( 'clone', url )
 
+        return command
+
+    @classmethod
+    def branch( cls, remote=False, src=None ):
+        """
+        wrapper de git branch
+        """
+        if remote:
+            command = cls._build_command(
+                'branch', '-r', src=src, result_class=Branch_result )
+        else:
+            command = cls._build_command(
+                'branch', src=src, result_class=Branch_result )
         return command

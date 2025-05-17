@@ -64,6 +64,18 @@ class Branch:
         self.repo = repo
         self.name = name
 
+    def __repr__( self ):
+        return (
+            f"{type(self)}( name={self.name}, repo={self.repo} )"
+        )
+
+    def __eq__( self, other ):
+        if isinstance( other, str ):
+            return self.name == other
+        else:
+            raise NotImplementedError(
+                f"no implementado eq {self} con {other}" )
+
 
 class Head( Branch ):
     @property
