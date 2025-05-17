@@ -5,7 +5,7 @@ from chibi_command import Result_error
 
 from chibi_git.command import Git as Git_command
 from chibi_git.exception import Git_not_initiate
-from chibi_git.obj import Head, Commit
+from chibi_git.obj import Head, Commit, Tag
 from chibi_git.branches import Branches
 from chibi_git.snippets import get_base_name_from_git_url
 from chibi_atlas import Chibi_atlas
@@ -53,6 +53,13 @@ class Git:
 
     @property
     def has_git( self ):
+        """
+        si tiene un repo git el repo
+
+        Results
+        -------
+        bool
+        """
         try:
             Git_command.rev_parse( src=self._path ).run()
         except Result_error as e:
@@ -61,6 +68,9 @@ class Git:
         return True
 
     def init( self ):
+        """
+        inicializa un repositorio de git
+        """
         try:
             self.has_git
             raise NotImplementedError
@@ -178,6 +188,14 @@ class Git:
         regresa el objeto manejador de ramas para el repo
         """
         return Branches( self )
+
+    @property
+    def tags( self ):
+        """
+        regresa una lista de objetos de tags
+        """
+        tags = Git_command.tag( src=self._path ).run().result
+        return list( map( lambda x: Tag( repo=self, name=x ), tags ) )
 
     def __repr__( self ):
         return (

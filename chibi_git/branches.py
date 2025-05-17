@@ -1,4 +1,4 @@
-from chibi_git.obj import Branch
+from chibi_git.obj import Branch, Commit
 from chibi_git.command import Git
 
 
@@ -15,7 +15,7 @@ class Branches:
     def local( self ):
         branches = Git.branch( src=self.repo.path ).run()
         result = map( lambda x: Branch( self.repo, x ), branches.result )
-        return list( result )
+        return { b: b for b in result }
 
     @property
     def remote( self ):
@@ -25,6 +25,26 @@ class Branches:
 
     def __iter__( self ):
         return iter( self.local )
+
+    def create( self, name, target=None ):
+        """
+        crea una nueva rama en el target
+
+        Parameters
+        ----------
+        name: str
+            nombre de la rama nueva
+        target: str
+            objetivo de la rama
+        """
+        if target is None:
+            target = 'HEAD'
+        if isinstance( target, Commit ):
+            target = str( target )
+
+        command = Git.branch( name, target, src=self.repo.path )
+        command.run()
+        return self.local[ name ]
 
 
 class Branches_remote( list ):

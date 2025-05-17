@@ -44,12 +44,29 @@ class Status_result( Command_result ):
         self.result = result
 
 
-class Branch_result( Command_result ):
+class Clean_lines( Command_result ):
     def parse_result( self ):
         lines = self.result.split( '\n' )
         lines = filter( bool, lines )
         lines = map( str.strip, lines )
-        lines = map( remove_start_asterisk, lines )
+        self.result = list( lines )
+
+
+class Branch_result( Clean_lines ):
+    def parse_result( self ):
+        super().parse_result()
+        lines = map( remove_start_asterisk, self.result )
+        self.result = list( lines )
+
+
+class Tag_result( Clean_lines ):
+    pass
+
+
+class Show_ref_result( Clean_lines ):
+    def parse_result( self ):
+        super().parse_result()
+        lines = map( lambda x: x.split( ' ' ), self.result )
         self.result = list( lines )
 
 
@@ -62,10 +79,8 @@ class Rev_parse_result( Clean_result ):
     pass
 
 
-class Rev_list_parse_result( Command_result ):
-    def parse_result( self ):
-        self.result = list(
-            map( lambda x: x.strip(), self.result.strip( '\n' ) ) )
+class Rev_list_parse_result( Clean_lines ):
+    pass
 
 
 class Remote_result( Command_result ):
@@ -174,7 +189,7 @@ class Git( Command ):
         return command
 
     @classmethod
-    def branch( cls, remote=False, src=None ):
+    def branch( cls, *args, remote=False, src=None ):
         """
         wrapper de git branch
         """
@@ -183,5 +198,24 @@ class Git( Command ):
                 'branch', '-r', src=src, result_class=Branch_result )
         else:
             command = cls._build_command(
-                'branch', src=src, result_class=Branch_result )
+                'branch', *args, src=src, result_class=Branch_result )
+        return command
+
+
+    @classmethod
+    def tag( cls, src=None ):
+        """
+        wrapper de git branch
+        """
+        command = cls._build_command(
+            'tag', src=src, result_class=Tag_result )
+        return command
+
+    @classmethod
+    def show_ref( cls, ref, src=None ):
+        """
+        wrapper de git show-ref
+        """
+        command = cls._build_command(
+            'show-ref', ref, src=src, result_class=Show_ref_result )
         return command

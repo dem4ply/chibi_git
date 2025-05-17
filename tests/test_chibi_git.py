@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import random
 import datetime
 import unittest
 
@@ -11,6 +12,22 @@ from chibi.madness.string import generate_string
 from chibi_git import Git
 from chibi_git.exception import Git_not_initiate
 from chibi_git.obj import Branch, Commit, Remote_wrapper
+
+
+class Test_chibi_git_with_history( unittest.TestCase ):
+    def setUp(self):
+        self.path = Chibi_temp_path()
+        self.repo = Git( self.path )
+        self.repo.init()
+        self.amount_commits = random.randint( 1, 20 )
+        for i in range( self.amount_commits ):
+            file = self.path.temp_file()
+            self.repo.add( file )
+            self.repo.commit( f"commit {i}" )
+
+    def test_repo_should_have_correct_amount_of_commits( self ):
+        commits = list( self.repo.log() )
+        self.assertEqual( len( commits ), self.amount_commits )
 
 
 class Test_chibi_git_not_init( unittest.TestCase ):
@@ -213,7 +230,7 @@ class Test_chibi_git_remote( Test_chibi_git_after_commit ):
 
 class Test_chibi_git_status_file_obj( Test_chibi_git_after_commit ):
     def test_status_obj_should_be_a_object_like_chibi_path( self ):
-        file = self.path.temp_file()
+        self.path.temp_file()
         self.assertEqual( len( self.repo.status.untrack ), 1 )
         self.assertIsInstance( self.repo.status.untrack[0], Chibi_path )
 
@@ -232,13 +249,40 @@ class Test_chibi_git_branchs( Test_chibi_git_after_commit ):
         self.assertTrue( self.repo.branches.local )
 
     def test_branches_local_should_be_a_list( self ):
-        self.assertIsInstance( self.repo.branches.local, list )
+        self.assertIsInstance( self.repo.branches.local, dict )
 
     def test_master_should_be_in_branches( self ):
         self.assertIn( 'master', self.repo.branches )
 
     def test_master_should_be_in_branches_local( self ):
         self.assertIn( 'master', self.repo.branches.local )
+
+    def test_can_create_a_new_brach( self ):
+        self.assertNotIn( 'new_branch', self.repo.branches.local )
+        self.repo.branches.create( 'new_branch' )
+        self.assertIn( 'new_branch', self.repo.branches.local )
+
+    def test_new_branch_should_have_his_commit( self ):
+        self.assertNotIn( 'new_branch', self.repo.branches.local )
+        branch = self.repo.branches.create( 'new_branch' )
+        self.assertIsInstance( branch.commit, Commit )
+
+class Test_create_branch( Test_chibi_git_with_history ):
+    def test_can_create_branch_in_any_commit( self ):
+        self.assertNotIn( 'new_branch', self.repo.branches.local )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        branch = self.repo.branches.create( 'new_branch', str( commit ) )
+        self.assertEqual( branch.commit, commit )
+        self.assertIsInstance( branch.commit, Commit )
+
+    def test_can_create_branch_in_any_commit_obj( self ):
+        self.assertNotIn( 'new_branch', self.repo.branches.local )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        branch = self.repo.branches.create( 'new_branch', commit )
+        self.assertEqual( branch.commit, commit )
+        self.assertIsInstance( branch.commit, Commit )
 
 
 class Test_chibi_git_branches_remote( unittest.TestCase ):
@@ -262,3 +306,21 @@ class Test_chibi_git_branches_remote( unittest.TestCase ):
 
     def test_master_should_be_in_branches_remote_origin( self ):
         self.assertIn( 'master', self.repo.branches.remote.origin )
+
+
+class Test_chibi_git_tag( unittest.TestCase ):
+    def setUp( self ):
+        self.repo = Git( '.' )
+
+    def test_tags_should_return_a_list( self ):
+        self.assertIsInstance( self.repo.tags, list )
+        self.assertTrue( self.repo.tags )
+
+    def test_tags_should_have_some_version( self ):
+        self.assertIn( 'v0.0.2', self.repo.tags )
+
+    def  test_tags_should_have_commits( self ):
+        self.assertTrue( self.repo.tags )
+        for tag in self.repo.tags:
+            self.assertTrue( tag.commit )
+            self.assertIsInstance( tag.commit, Commit )

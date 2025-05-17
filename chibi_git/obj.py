@@ -28,6 +28,13 @@ class Commit:
     def __hash__( self ):
         return hash( self._hash )
 
+    def __eq__( self, other ):
+        if isinstance( other, Commit ):
+            return hash( other ) == hash( self ) and other.repo == self.repo
+        else:
+            raise NotImplementedError(
+                f"no implementado con el {type(other)}( {str(other)} )" )
+
     def get_info( self ):
         result = Git.log(
             '-n', 1, '--date=iso8601-strict', self._hash, src=self.repo.path )
@@ -58,6 +65,9 @@ class Commit:
     def __str__( self ):
         return f"{self._hash}"
 
+    def __repr__( self ):
+        return f"Commit( hash={self._hash}, repo={self.repo.path} )"
+
 
 class Branch:
     def __init__( self, repo, name ):
@@ -66,7 +76,7 @@ class Branch:
 
     def __repr__( self ):
         return (
-            f"{type(self)}( name={self.name}, repo={self.repo} )"
+            f"Branch( name={self.name}, repo={self.repo.path} )"
         )
 
     def __eq__( self, other ):
@@ -75,6 +85,17 @@ class Branch:
         else:
             raise NotImplementedError(
                 f"no implementado eq {self} con {other}" )
+
+    def __hash__( self ):
+        return hash( self.name )
+
+    @property
+    def commit( self ):
+        """
+        commit de la rama
+        """
+        ref = Git.show_ref( self.name, src=self.repo.path ).run()
+        return Commit( self.repo, hash=ref.result[0][0] )
 
 
 class Head( Branch ):
@@ -115,6 +136,29 @@ class Remote_wrapper:
                 return self._names[ name ]
             except KeyError:
                 raise e
+
+
+class Tag:
+    def __init__( self, repo, name ):
+        self.name = name
+        self.repo = repo
+
+    def __repr__( self ):
+        return (
+            f"Tag( name={self.name}, repo={self.repo} )"
+        )
+
+    def __eq__( self, other ):
+        if isinstance( other, str ):
+            return self.name == other
+        else:
+            raise NotImplementedError(
+                f"no implementado eq {self} con {other}" )
+
+    @property
+    def commit( self ):
+        ref = Git.show_ref( self.name, src=self.repo.path ).run()
+        return Commit( self.repo, hash=ref.result[0][0] )
 
 
 class Chibi_status_file( Chibi_path ):
