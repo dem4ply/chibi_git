@@ -128,7 +128,7 @@ class Git( Command ):
         if set_upstream:
             args.append( '--set-upstream' )
         command = cls._build_command(
-            'push', origin, branch, *args, src=src, )
+            'push', origin, branch, *args, src=src, captive=False )
         return command
 
     @classmethod
