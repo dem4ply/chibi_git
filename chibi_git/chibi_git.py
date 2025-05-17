@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from chibi.file import Chibi_path
 from chibi_command import Result_error
 
@@ -8,6 +9,9 @@ from chibi_git.obj import Head, Commit
 from chibi_git.snippets import get_base_name_from_git_url
 from chibi_atlas import Chibi_atlas
 from .obj import Remote_wrapper, Chibi_status_file
+
+
+logger = logging.getLogger( 'chibi_git' )
 
 
 class Git:
@@ -41,6 +45,7 @@ class Git:
         base_name = get_base_name_from_git_url( url )
         path = path + base_name
 
+        logger.info( f'clonando "{url}" en "{path}"' )
         Git_command.clone( url, path ).run()
 
         return cls( path )
