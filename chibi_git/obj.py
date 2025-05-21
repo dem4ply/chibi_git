@@ -99,7 +99,10 @@ class Branch:
         return Commit( self.repo, hash=ref.result[0][0] )
 
     def checkout( self ):
-        Git.checkout( self.name, src=self.repo.path ).run()
+        if not self.is_remote:
+            Git.checkout( self.name, src=self.repo.path ).run()
+        else:
+            Git.checkout( '--track', self.name, src=self.repo.path ).run()
 
 
 class Head( Branch ):
