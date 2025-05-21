@@ -320,6 +320,17 @@ class Test_create_tag( Test_chibi_git_with_history ):
         self.assertIsInstance( tag.commit, Commit )
 
 
+class Test_fetch( Test_chibi_git_with_history ):
+    @patch( 'chibi_git.command.Git.fetch' )
+    def test_fetch_should_call_command_fetch( self, fetch ):
+        result_comamnd = Mock()
+        fetch.return_value = result_comamnd
+
+        self.repo.fetch()
+        fetch.assert_called_once()
+        result_comamnd.run.assert_called_once()
+
+
 class Test_chibi_git_branches_remote( unittest.TestCase ):
     def setUp( self ):
         self.repo = Git( '.' )

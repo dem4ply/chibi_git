@@ -202,3 +202,7 @@ class Git:
         return (
             f"{type(self)}( path={self.path} )"
         )
+
+    def fetch( self ):
+        command = Git_command.fetch( src=self._path )
+        command.run()

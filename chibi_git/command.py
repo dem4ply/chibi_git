@@ -218,3 +218,11 @@ class Git( Command ):
         command = cls._build_command(
             'show-ref', ref, src=src, result_class=Show_ref_result )
         return command
+
+    @classmethod
+    def fetch( cls, src=None ):
+        """
+        wrapper de git fetch
+        """
+        command = cls._build_command( 'fetch', src=src, captive=False )
+        return command
