@@ -2,6 +2,11 @@
 History
 =======
 
+0.6.0 ( 2025-05-21 )
+--------------------
+
+* funcionalidad para cambiar de ramas locales y remotas Git( '.' ).branches[ 'master' ].checkout()
+
 0.5.0 ( 2025-05-17 )
 --------------------
 
