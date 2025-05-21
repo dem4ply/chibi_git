@@ -19,6 +19,7 @@ class Branches:
 
     @property
     def remote( self ):
+        return Branches_remote( repo=self.repo )
         branches = Git.branch( remote=True, src=self.repo.path ).run()
         result = map( lambda x: Branch( self.repo, x ), branches.result )
         return Branches_remote( result )
@@ -52,13 +53,50 @@ class Branches:
         return self.local[ name ]
 
 
-class Branches_remote( list ):
+class Branches_remote:
+    def __init__( self, repo, prefix=None ):
+        self.repo = repo
+        self.prefix = prefix
+
+    def __repr__( self ):
+        return (
+            f"Branches_remote( repo={self.repo} )"
+        )
+
     @property
     def origin( self ):
-        return Branches_remote( self._get_without_prefix( 'origin' ) )
+        return Branches_remote( repo=self.repo, prefix='origin' )
 
     def _get_without_prefix( self, prefix ):
-        for branch in self:
+        for branch in self._branches:
             if branch.name.startswith( 'origin' ):
                 name = branch.name.replace( 'origin/', '', 1 )
-                yield Branch( repo=branch.repo, name=name )
+                yield Branch( repo=branch.repo, name=name, is_remote=True )
+
+    def __iter__( self ):
+        if self.prefix is not None:
+            branches = self._get_without_prefix( self.prefix )
+            yield from branches
+        else:
+            yield from self._branches
+
+    def __getitem__( self, name ):
+        for branch in self:
+            if name == branch.name:
+                return branch
+        raise KeyError( 'no se encontro la rama "{name}"' )
+
+    @property
+    def _branches( self ):
+        branches = Git.branch( remote=True, src=self.repo.path ).run()
+        for branch in branches.result:
+            yield Branch( repo=self.repo, name=branch, is_remote=True )
+
+    def __getattr__( self, name ):
+        try:
+            return super().__getattribute__( name )
+        except AttributeError as e:
+            try:
+                return self[ name ]
+            except KeyError:
+                raise e

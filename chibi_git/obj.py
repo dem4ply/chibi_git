@@ -70,9 +70,10 @@ class Commit:
 
 
 class Branch:
-    def __init__( self, repo, name ):
+    def __init__( self, repo, name, is_remote=False ):
         self.repo = repo
         self.name = name
+        self.is_remote = is_remote
 
     def __repr__( self ):
         return (
@@ -96,6 +97,9 @@ class Branch:
         """
         ref = Git.show_ref( self.name, src=self.repo.path ).run()
         return Commit( self.repo, hash=ref.result[0][0] )
+
+    def checkout( self ):
+        Git.checkout( self.name, src=self.repo.path ).run()
 
 
 class Head( Branch ):

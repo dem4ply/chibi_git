@@ -286,6 +286,22 @@ class Test_create_branch( Test_chibi_git_with_history ):
         self.assertIsInstance( branch.commit, Commit )
 
 
+class Test_checkout_branch( Test_chibi_git_with_history ):
+    def setUp( self ):
+        super().setUp()
+        self.new_branch = 'new_branch'
+        self.assertNotIn( self.new_branch, self.repo.branches.local )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        branch = self.repo.branches.create( 'new_branch', str( commit ) )
+        self.new_branch = branch
+
+    def test_checkout_to_another_branch_should_work( self ):
+        self.assertNotEqual( self.repo.head.name, self.new_branch.name )
+        self.new_branch.checkout()
+        self.assertEqual( self.repo.head.name, self.new_branch.name )
+
+
 class Test_create_tag( Test_chibi_git_with_history ):
     def test_can_create_tag_in_any_commit( self ):
         self.assertNotIn( 'new_tag', self.repo.tags )
@@ -314,17 +330,21 @@ class Test_chibi_git_branches_remote( unittest.TestCase ):
     def test_branches_remote_should_have_origin( self ):
         self.assertTrue( self.repo.branches.remote.origin )
 
-    def test_branches_remote_should_be_a_list( self ):
-        self.assertIsInstance( self.repo.branches.remote, list )
-
-    def test_branches_remote_origin_should_be_a_list( self ):
-        self.assertIsInstance( self.repo.branches.remote.origin, list )
-
     def test_master_should_be_in_branches_remote( self ):
         self.assertIn( 'origin/master', self.repo.branches.remote )
 
     def test_master_should_be_in_branches_remote_origin( self ):
         self.assertIn( 'master', self.repo.branches.remote.origin )
+
+    def test_remote_branch_should_have_checkout_attr( self ):
+        self.assertTrue(
+            hasattr( self.repo.branches.remote[ 'origin/master' ], 'checkout' )
+        )
+
+    def test_remote_origin_branch_should_have_checkout_attr( self ):
+        self.assertTrue(
+            hasattr( self.repo.branches.remote.origin.master, 'checkout' )
+        )
 
 
 class Test_chibi_git_tag( unittest.TestCase ):
