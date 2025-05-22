@@ -170,7 +170,7 @@ class Git:
         return bool( result )
 
     def pull( self ):
-        Git_command.pull().run()
+        Git_command.pull( src=self._path ).run()
 
     @property
     def remote( self ):
