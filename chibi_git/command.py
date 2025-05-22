@@ -226,3 +226,8 @@ class Git( Command ):
         """
         command = cls._build_command( 'fetch', src=src, captive=False )
         return command
+
+    @classmethod
+    def pull( cls, *args, src=None ):
+        command = cls._build_command( 'pull', *args, src=src, captive=False )
+        return command

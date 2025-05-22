@@ -373,3 +373,8 @@ class Test_chibi_git_tag( unittest.TestCase ):
         for tag in self.repo.tags:
             self.assertTrue( tag.commit )
             self.assertIsInstance( tag.commit, Commit )
+
+
+class Test_pull( Test_chibi_git_with_history ):
+    def test_pull_should_work( self ):
+        self.repo.pull()

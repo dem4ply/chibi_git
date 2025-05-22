@@ -169,6 +169,9 @@ class Git:
         result = push.run()
         return bool( result )
 
+    def pull( self ):
+        Git_command.pull().run()
+
     @property
     def remote( self ):
         result = Remote_wrapper( repo=self )
