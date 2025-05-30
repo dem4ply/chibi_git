@@ -164,8 +164,10 @@ class Tag:
 
     @property
     def commit( self ):
-        ref = Git.show_ref( self.name, src=self.repo.path ).run()
-        return Commit( self.repo, hash=ref.result[0][0] )
+        name = self.name + '^{}'
+        #ref = Git.show_ref( name, src=self.repo.path ).run()
+        ref = Git.rev_parse( name, src=self.repo.path ).run()
+        return Commit( self.repo, hash=ref.result )
 
 
 class Chibi_status_file( Chibi_path ):

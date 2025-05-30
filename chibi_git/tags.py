@@ -22,7 +22,7 @@ class Tags:
         raise KeyError(
             f'no se encontro el tag "{name}" en {self.repo.path}' )
 
-    def create( self, name, target=None ):
+    def create( self, name, target=None, message=None ):
         """
         crea un nuevo tag en el target
 
@@ -43,6 +43,10 @@ class Tags:
             raise NotImplementedError(
                 f"target {type(target)} con valor {target} no implementado" )
 
-        command = Git.tag( name, target, src=self.repo.path )
+        if message:
+            command = Git.tag(
+                name, target, '-m', message, src=self.repo.path )
+        else:
+            command = Git.tag( name, target, src=self.repo.path )
         command.run()
         return self[ name ]

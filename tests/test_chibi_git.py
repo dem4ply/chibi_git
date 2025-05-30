@@ -319,6 +319,24 @@ class Test_create_tag( Test_chibi_git_with_history ):
         self.assertEqual( tag.commit, commit )
         self.assertIsInstance( tag.commit, Commit )
 
+    def test_can_create_tag_with_message( self ):
+        self.assertNotIn( 'new_tag', self.repo.tags )
+        commits = list( self.repo.log() )
+        commit = random.choice( commits )
+        tag = self.repo.tags.create( 'new_tag', commit, message="something" )
+        self.assertEqual( tag.commit, commit )
+        self.assertIsInstance( tag.commit, Commit )
+
+    @patch( 'chibi_git.command.Git.tag' )
+    def test_can_create_tag_with_message_should_have_mesagge( self, tag ):
+        try:
+            self.repo.tags.create( 'new_tag', message="something" )
+        except:
+            pass
+        self.assertEqual(
+            tag.call_args_list[0][0],
+            ( 'new_tag', 'HEAD', '-m', 'something' ) )
+
 
 class Test_fetch( Test_chibi_git_with_history ):
     @patch( 'chibi_git.command.Git.fetch' )
@@ -377,4 +395,5 @@ class Test_chibi_git_tag( unittest.TestCase ):
 
 class Test_pull( Test_chibi_git_with_history ):
     def test_pull_should_work( self ):
-        self.repo.pull()
+        repo = Git( '.' )
+        repo.pull()
