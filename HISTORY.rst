@@ -2,6 +2,12 @@
 History
 =======
 
+0.9.0 ( 2025-05-29 )
+--------------------
+
+* parametro para agregar mensajes en los tags
+  Git( '.' ).tags.create( 'new_branch', message="algun mensaje en el tag" )
+
 0.8.1 ( 2025-05-22 )
 --------------------
 
