@@ -84,7 +84,7 @@ class Branches_remote:
         for branch in self:
             if name == branch.name:
                 return branch
-        raise KeyError( 'no se encontro la rama "{name}"' )
+        raise KeyError( f'no se encontro la rama "{name}"' )
 
     @property
     def _branches( self ):
